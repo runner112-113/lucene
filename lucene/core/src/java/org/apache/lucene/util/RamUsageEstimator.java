@@ -168,13 +168,17 @@ public final class RamUsageEstimator {
         }
       }
       JVM_IS_HOTSPOT_64BIT = isHotspot;
+      // 是否开启指针压缩 oops
       COMPRESSED_REFS_ENABLED = compressedOops;
+      // 对齐填充
       NUM_BYTES_OBJECT_ALIGNMENT = objectAlignment;
       // reference size is 4, if we have compressed oops:
       NUM_BYTES_OBJECT_REF = COMPRESSED_REFS_ENABLED ? 4 : 8;
       // "best guess" based on reference size:
+      // 对象头 = MARKWORD(8 byte) + KCLASS ref (NUM_BYTES_OBJECT_REF)
       NUM_BYTES_OBJECT_HEADER = 8 + NUM_BYTES_OBJECT_REF;
       // array header is NUM_BYTES_OBJECT_HEADER + NUM_BYTES_INT, but aligned (object alignment):
+      // 数组的话 对象头会多一个int数组长度
       NUM_BYTES_ARRAY_HEADER = (int) alignObjectSize(NUM_BYTES_OBJECT_HEADER + Integer.BYTES);
     } else {
       JVM_IS_HOTSPOT_64BIT = false;
