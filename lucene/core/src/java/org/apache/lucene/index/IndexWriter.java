@@ -448,6 +448,7 @@ public class IndexWriter
         }
       };
 
+  // 实现了近实时搜索：能够实时刷新缓冲区中新增或删除的文档，然后创建新的包含这些文档的制度型IndexReader
   DirectoryReader getReader() throws IOException {
     return getReader(true, false);
   }
@@ -1811,6 +1812,7 @@ public class IndexWriter
    * @throws CorruptIndexException if the index is corrupt
    * @throws IOException if there is a low-level IO error
    */
+  // 先删除后添加
   public long updateDocument(Term term, Iterable<? extends IndexableField> doc) throws IOException {
     return updateDocuments(
         term == null ? null : DocumentsWriterDeleteQueue.newNode(term), List.of(doc));
@@ -3841,6 +3843,7 @@ public class IndexWriter
     return docWriter.anyChanges() || bufferedUpdatesStream.any();
   }
 
+  // 两阶段提交
   private long commitInternal(MergePolicy mergePolicy) throws IOException {
 
     if (infoStream.isEnabled("IW")) {
@@ -3860,6 +3863,7 @@ public class IndexWriter
         if (infoStream.isEnabled("IW")) {
           infoStream.message("IW", "commit: now prepare");
         }
+        // 1.prepare
         seqNo = prepareCommitInternal();
       } else {
         if (infoStream.isEnabled("IW")) {
@@ -3868,6 +3872,7 @@ public class IndexWriter
         seqNo = pendingSeqNo;
       }
 
+      // commit
       finishCommit();
     }
 

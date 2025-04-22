@@ -440,6 +440,7 @@ final class DocumentsWriter implements Closeable, Accountable {
         numDocsInRAM.addAndGet(dwpt.getNumDocsInRAM() - dwptNumDocs);
       }
       final boolean isUpdate = delNode != null && delNode.isDelete();
+      // 查找符合flush的segment。
       flushingDWPT = flushControl.doAfterDocument(dwpt, isUpdate);
     } finally {
       if (dwpt.isFlushPending() || dwpt.isAborted()) {
@@ -450,12 +451,14 @@ final class DocumentsWriter implements Closeable, Accountable {
       assert dwpt.isHeldByCurrentThread() == false : "we didn't release the dwpt even on abort";
     }
 
+    // flush当前segment，或者其他segment
     if (postUpdate(flushingDWPT, hasEvents)) {
       seqNo = -seqNo;
     }
     return seqNo;
   }
 
+  // flush一个segment
   private boolean doFlush(DocumentsWriterPerThread flushingDWPT) throws IOException {
     boolean hasEvents = false;
     while (flushingDWPT != null) {

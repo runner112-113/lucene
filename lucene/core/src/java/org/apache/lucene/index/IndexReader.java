@@ -66,6 +66,8 @@ import org.apache.lucene.util.Bits; // javadocs
  * synchronization, you should <b>not</b> synchronize on the <code>IndexReader</code> instance; use
  * your own (non-Lucene) objects instead.
  */
+// 打开IndexReader需要较大的系统开销，因此你必须尽可能重复使用同一个IndexReader实例以用于搜素，
+// 并限制打开IndexReader的频率
 public abstract class IndexReader implements Closeable {
 
   private boolean closed = false;

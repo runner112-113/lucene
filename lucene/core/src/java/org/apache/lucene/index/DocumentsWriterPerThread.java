@@ -236,6 +236,7 @@ final class DocumentsWriterPerThread implements Accountable {
           // it's very hard to fix (we can't easily distinguish aborting
           // vs non-aborting exceptions):
           reserveOneDoc();
+          // 索引链 构建 倒排索引
           indexingChain.processDocument(numDocsInRAM++, doc);
         }
         allDocsIndexed = true;
@@ -465,6 +466,7 @@ final class DocumentsWriterPerThread implements Accountable {
               flushState.liveDocs,
               flushState.delCountOnFlush,
               sortMap);
+      // 写cfs, cfe, si, liv（如果有删除）文件
       sealFlushedSegment(fs, sortMap, flushNotifications);
       if (infoStream.isEnabled("DWPT")) {
         infoStream.message(

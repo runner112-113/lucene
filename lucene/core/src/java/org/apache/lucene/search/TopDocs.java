@@ -23,9 +23,11 @@ import org.apache.lucene.util.PriorityQueue;
 public class TopDocs {
 
   /** The total number of hits for the query. */
+  // 匹配的文章数量
   public TotalHits totalHits;
 
   /** The top hits for the query. */
+  // 包含搜索结果的ScoreDoc对象数组
   public ScoreDoc[] scoreDocs;
 
   /** Internal comparator with shardIndex */

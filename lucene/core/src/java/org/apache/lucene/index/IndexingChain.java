@@ -237,6 +237,7 @@ final class IndexingChain implements Accountable {
     Sorter.DocMap sortMap = maybeSortSegment(state);
     int maxDoc = state.segmentInfo.maxDoc();
     long t0 = System.nanoTime();
+    // 写nvd, nvm文件
     writeNorms(state, sortMap);
     if (infoStream.isEnabled("IW")) {
       infoStream.message("IW", ((System.nanoTime() - t0) / 1000000) + " msec to write norms");
@@ -250,12 +251,14 @@ final class IndexingChain implements Accountable {
             state.segmentSuffix);
 
     t0 = System.nanoTime();
+    // 写dvd, dvm文件
     writeDocValues(state, sortMap);
     if (infoStream.isEnabled("IW")) {
       infoStream.message("IW", ((System.nanoTime() - t0) / 1000000) + " msec to write docValues");
     }
 
     t0 = System.nanoTime();
+    // 针对numberic, 写dii, dim文件
     writePoints(state, sortMap);
     if (infoStream.isEnabled("IW")) {
       infoStream.message("IW", ((System.nanoTime() - t0) / 1000000) + " msec to write points");
@@ -270,6 +273,7 @@ final class IndexingChain implements Accountable {
     // it's possible all docs hit non-aborting exceptions...
     t0 = System.nanoTime();
     storedFieldsConsumer.finish(maxDoc);
+    //写fdt, fdx文件（该文件在首次indexing时创建，flush时写入值）
     storedFieldsConsumer.flush(state, sortMap);
     if (infoStream.isEnabled("IW")) {
       infoStream.message(
@@ -297,6 +301,7 @@ final class IndexingChain implements Accountable {
         // Use the merge instance in order to reuse the same IndexInput for all terms
         normsMergeInstance = norms.getMergeInstance();
       }
+      //写doc, pos, tim, tip文件
       termsHash.flush(fieldsToFlush, state, sortMap, normsMergeInstance);
     }
     if (infoStream.isEnabled("IW")) {
@@ -310,6 +315,7 @@ final class IndexingChain implements Accountable {
     // FreqProxTermsWriter does this with
     // FieldInfo.storePayload.
     t0 = System.nanoTime();
+    // 写fnm文件
     indexWriterConfig
         .getCodec()
         .fieldInfosFormat()
@@ -724,6 +730,7 @@ final class IndexingChain implements Accountable {
     boolean indexedField = false;
 
     // Invert indexed fields
+    // 倒排索引处理 - 会进行分析
     if (fieldType.indexOptions() != IndexOptions.NONE) {
       if (pf.first) { // first time we see this field in this doc
         pf.invert(docID, field, true);
@@ -1221,6 +1228,7 @@ final class IndexingChain implements Accountable {
           // corrupt and should not be flushed to a
           // new segment:
           try {
+            // 添加到倒排索引
             termsHashPerField.add(invertState.termAttribute.getBytesRef(), docID);
           } catch (MaxBytesLengthExceededException e) {
             byte[] prefix = new byte[30];

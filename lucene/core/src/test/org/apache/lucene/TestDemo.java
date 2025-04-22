@@ -48,7 +48,7 @@ public class TestDemo extends LuceneTestCase {
             + "longtermlongtermlongterm";
     String text = "This is the text to be indexed. " + longTerm;
 
-    Path indexPath = Files.createTempDirectory("tempIndex");
+    Path indexPath = Files.createTempDirectory("lucenedemo");
     try (Directory dir = FSDirectory.open(indexPath)) {
       Analyzer analyzer = new StandardAnalyzer();
       try (IndexWriter iw = new IndexWriter(dir, new IndexWriterConfig(analyzer))) {
