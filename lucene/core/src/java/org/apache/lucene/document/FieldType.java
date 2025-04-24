@@ -30,7 +30,9 @@ import org.apache.lucene.index.VectorValues;
 /** Describes the properties of a field. */
 public class FieldType implements IndexableFieldType {
 
+  // 是否存储完整的域信息
   private boolean stored;
+  // 是否使用配置的Analyzer进行分析 构建倒排索引
   private boolean tokenized = true;
   private boolean storeTermVectors;
   private boolean storeTermVectorOffsets;

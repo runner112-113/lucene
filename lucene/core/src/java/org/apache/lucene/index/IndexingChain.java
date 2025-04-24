@@ -594,6 +594,7 @@ final class IndexingChain implements Accountable {
     try {
       // 1st pass over doc fields – verify that doc schema matches the index schema
       // build schema for each unique doc field
+      // 处理文档的每个域field
       for (IndexableField field : document) {
         IndexableFieldType fieldType = field.fieldType();
         PerField pf = getOrAddPerField(field.name(), fieldType);
@@ -742,6 +743,7 @@ final class IndexingChain implements Accountable {
     }
 
     // Add stored fields
+    // 是否存储完整的field域信息
     if (fieldType.stored()) {
       String value = field.stringValue();
       if (value != null && value.length() > IndexWriter.MAX_STORED_STRING_LENGTH) {
@@ -753,6 +755,7 @@ final class IndexingChain implements Accountable {
                 + " characters) to store");
       }
       try {
+        // 存储完整的域信息
         storedFieldsConsumer.writeField(pf.fieldInfo, field);
       } catch (Throwable th) {
         onAbortingException(th);
